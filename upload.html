@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload | NexusDrive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ---------- GLOBAL ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        :root {
+          --primary: #6c63ff;
+          --secondary: #4a44c6;
+          --accent: #ff6584;
+          --teal: #00ffd5;
+          --dark: #0d0d1b;
+          --light: #f5f5f7;
+          --glass: rgba(255, 255, 255, 0.08);
+          --glass-border: rgba(255, 255, 255, 0.15);
+        }
+        body {
+          background: linear-gradient(135deg, #100d25, #1a1442);
+          color: var(--light);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          animation: bgShift 25s ease infinite alternate;
+        }
+        @keyframes bgShift {
+          0% {background-position: 0% 0%;}
+          100% {background-position: 100% 100%;}
+        }
+
+        .container {
+          width: 100%;
+          max-width: 1200px;
+          margin-top: 100px;
+          position: relative;
+          z-index: 2;
+          transition: all 0.6s ease;
+          padding: 0 20px;
+        }
+
+        /* ---------- NAVBAR ---------- */
+        nav {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%;
+          background: linear-gradient(90deg, rgba(20,20,45,0.85), rgba(50,40,120,0.85), rgba(20,20,45,0.85));
+          backdrop-filter: blur(10px);
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+          z-index: 10;
+          padding: 15px 40px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: all 0.4s ease;
+        }
+        nav:hover {
+          box-shadow: 0 0 35px rgba(108, 99, 255, 0.45);
+        }
+        nav .logo {
+          display: flex;
+          align-items: center;
+          font-size: 28px;
+          font-weight: 700;
+          background: linear-gradient(45deg, var(--primary), var(--accent), var(--teal));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: hueSpin 6s linear infinite;
+        }
+        @keyframes hueSpin {
+          0% {filter: hue-rotate(0deg);}
+          100% {filter: hue-rotate(360deg);}
+        }
+        nav .nav-links {
+          display: flex;
+          gap: 30px;
+          align-items: center;
+        }
+        nav .nav-links a {
+          text-decoration: none;
+          color: #dcdcdc;
+          font-weight: 500;
+          position: relative;
+          transition: color 0.3s ease;
+        }
+
+        /* ---------- UNIQUE HOVER EFFECT ---------- */
+        nav .nav-links a::after {
+          content: '';
+          position: absolute;
+          left: 0; bottom: -6px;
+          width: 100%; height: 2px;
+          background: linear-gradient(90deg, var(--primary), var(--accent), var(--teal));
+          border-radius: 2px;
+          transform: scaleX(0);
+          transform-origin: right;
+          transition: transform 0.4s ease-in-out;
+        }
+        nav .nav-links a:hover::after {
+          transform: scaleX(1);
+          transform-origin: left;
+        }
+        nav .nav-links a:hover {
+          color: var(--teal);
+          text-shadow: 0 0 8px var(--teal);
+        }
+        nav .nav-links a.active {
+          color: var(--teal);
+          text-shadow: 0 0 8px var(--teal);
+        }
+        nav .nav-links a.active::after {
+          transform: scaleX(1);
+        }
+
+        /* ---------- AVATAR ---------- */
+        .user-avatar {
+          width: 45px; height: 45px; border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary), var(--accent));
+          display: flex; align-items: center; justify-content: center;
+          font-weight: bold;
+          font-size: 18px;
+          color: white;
+          box-shadow: 0 0 15px var(--accent);
+          transition: all 0.3s ease;
+        }
+        .user-avatar:hover {
+          transform: rotate(10deg) scale(1.1);
+          box-shadow: 0 0 25px var(--teal);
+        }
+
+        /* ---------- LAYOUT TOGGLE BUTTON ---------- */
+        .layout-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .toggle-btn {
+          background: linear-gradient(45deg, var(--primary), var(--accent));
+          border: none;
+          border-radius: 30px;
+          color: white;
+          padding: 10px 25px;
+          font-weight: 600;
+          cursor: pointer;
+          box-shadow: 0 0 15px var(--primary);
+          transition: all 0.4s;
+        }
+        .toggle-btn:hover {
+          box-shadow: 0 0 25px var(--accent);
+          transform: scale(1.05);
+        }
+
+        /* ---------- DASHBOARD ---------- */
+        .dashboard {
+          display: grid;
+          grid-template-columns: 1fr 2fr;
+          gap: 30px;
+          margin-bottom: 40px;
+          transition: all 0.5s ease;
+        }
+        .dashboard.vertical {
+          grid-template-columns: 1fr;
+        }
+
+        /* ---------- CARDS ---------- */
+        .stats-card, .upload-area {
+          background: var(--glass);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          backdrop-filter: blur(12px);
+          padding: 25px;
+          box-shadow: 0 0 25px rgba(108, 99, 255, 0.25);
+          transition: all 0.4s ease;
+        }
+        .stats-card:hover, .upload-area:hover {
+          transform: translateY(-6px) scale(1.02);
+        }
+
+        /* ---------- STORAGE CARD ---------- */
+        .card-title { color: #ccc; font-size: 18px; margin-bottom: 15px; }
+        .stat { display: flex; justify-content: space-between; padding: 8px 0; }
+        .stat-value { font-size: 22px; color: var(--teal); font-weight: bold; }
+        .meter-bar {
+          height: 10px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 5px;
+          overflow: hidden;
+        }
+        .meter-fill {
+          height: 100%;
+          background: linear-gradient(90deg, var(--primary), var(--accent), var(--teal));
+          width: 65%;
+          border-radius: 5px;
+          animation: pulseBar 3s ease-in-out infinite alternate;
+        }
+        @keyframes pulseBar {
+          0% {width: 60%;}
+          100% {width: 68%;}
+        }
+
+        /* ---------- UPLOAD AREA ---------- */
+        .upload-area {
+          border: 2px dashed var(--glass-border);
+          text-align: center;
+          cursor: pointer;
+        }
+        .upload-area:hover {
+          border-color: var(--accent);
+          box-shadow: 0 0 30px var(--accent);
+        }
+        .upload-icon {
+          font-size: 70px;
+          color: var(--teal);
+          margin-bottom: 15px;
+          animation: float 2s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%, 100% {transform: translateY(0);}
+          50% {transform: translateY(-8px);}
+        }
+        .browse-btn {
+          background: linear-gradient(45deg, var(--primary), var(--accent));
+          border: none;
+          padding: 12px 30px;
+          border-radius: 50px;
+          font-weight: 600;
+          color: white;
+          box-shadow: 0 0 15px var(--primary);
+          transition: all 0.3s;
+          cursor: pointer;
+        }
+        .browse-btn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 0 25px var(--accent);
+        }
+
+        /* ---------- FILES SECTION ---------- */
+        .files-section {
+          background: var(--glass);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          padding: 25px;
+          box-shadow: 0 0 25px rgba(255,255,255,0.05);
+          transition: all 0.5s ease;
+        }
+        .files-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .file-list {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+          transition: all 0.5s ease;
+        }
+        .files-section.vertical .file-list {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        /* ---------- FILE CARDS ---------- */
+        .file-card {
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 15px;
+          padding: 20px;
+          border: 1px solid rgba(255,255,255,0.1);
+          transition: all 0.4s ease;
+        }
+        .file-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 0 25px var(--teal);
+        }
+        .file-icon {
+          width: 55px; height: 55px; border-radius: 12px;
+          background: linear-gradient(45deg, var(--primary), var(--accent));
+          display: flex; align-items: center; justify-content: center;
+          font-size: 22px; box-shadow: 0 0 15px var(--primary);
+        }
+        .progress-bar {
+          height: 8px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .progress {
+          height: 100%;
+          background: linear-gradient(90deg, var(--primary), var(--accent), var(--teal));
+          border-radius: 4px;
+          transition: width 0.5s ease;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+          .dashboard { grid-template-columns: 1fr; }
+          nav .nav-links { display: none; }
+          .files-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo"><i class="fas fa-cloud-upload-alt"></i>&nbsp;NexusDrive</div>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="upload.html" class="active">My Files</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+    </div>
+    <div class="user-avatar">VA</div>
+</nav>
+
+<div class="container">
+    <!-- DASHBOARD TOGGLE -->
+    <div class="layout-toggle">
+        <span>Dashboard Layout:</span>
+        <button class="toggle-btn" id="dashboardBtn">Horizontal</button>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div class="dashboard" id="dashboard">
+        <div class="stats-card">
+            <h3 class="card-title">Storage Overview</h3>
+            <div class="stat"><span>Used Space</span><span class="stat-value">4.2 GB</span></div>
+            <div class="stat"><span>Available</span><span class="stat-value">10.8 GB</span></div>
+            <div class="stat"><span>Files</span><span class="stat-value">127</span></div>
+            <div class="meter-bar"><div class="meter-fill"></div></div>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <h2 class="upload-text">Drag & Drop to Upload</h2>
+            <p class="upload-subtext">or click to browse files</p>
+            <button class="browse-btn">Browse Files</button>
+            <input type="file" class="file-input" id="fileInput" multiple hidden>
+        </div>
+    </div>
+
+    <!-- FILES SECTION -->
+    <div class="files-section" id="filesSection">
+        <div class="files-header">
+            <h2>Your Files</h2>
+            <div class="layout-toggle">
+                <span>Files Layout:</span>
+                <button class="toggle-btn" id="filesBtn">Grid</button>
+            </div>
+        </div>
+        <div class="file-list" id="fileList">
+            <!-- Files will be dynamically added here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- DOM ELEMENTS ----------
+    const uploadArea = document.getElementById("uploadArea");
+    const fileInput = document.getElementById("fileInput");
+    const fileList = document.getElementById("fileList");
+    const dashboardBtn = document.getElementById("dashboardBtn");
+    const filesBtn = document.getElementById("filesBtn");
+    const dashboard = document.getElementById("dashboard");
+    const filesSection = document.getElementById("filesSection");
+
+    // ---------- UPLOAD HANDLERS ----------
+    uploadArea.addEventListener("click", () => fileInput.click());
+    uploadArea.addEventListener("dragover", e => { 
+        e.preventDefault(); 
+        uploadArea.style.borderColor = "#00ffd5"; 
+    });
+    uploadArea.addEventListener("dragleave", () => { 
+        uploadArea.style.borderColor = "rgba(255,255,255,0.15)"; 
+    });
+    uploadArea.addEventListener("drop", e => { 
+        e.preventDefault(); 
+        uploadFiles(e.dataTransfer.files); 
+    });
+    fileInput.addEventListener("change", () => uploadFiles(fileInput.files));
+
+    // ---------- LAYOUT TOGGLES ----------
+    dashboardBtn.addEventListener("click", () => {
+        dashboard.classList.toggle("vertical");
+        dashboardBtn.textContent = dashboard.classList.contains("vertical") ? "Vertical" : "Horizontal";
+    });
+
+    filesBtn.addEventListener("click", () => {
+        filesSection.classList.toggle("vertical");
+        filesBtn.textContent = filesSection.classList.contains("vertical") ? "List" : "Grid";
+    });
+
+    // Upload files
+    function uploadFiles(files) {
+        // Display files immediately
+        Array.from(files).forEach(file => {
+            const card = document.createElement("div");
+            card.className = "file-card";
+            card.innerHTML = `
+                <div class="file-header"><div class="file-icon"><i class="fas fa-file"></i></div></div>
+                <div class="file-name">${file.name}</div>
+                <div class="file-info"><span>${(file.size/1024).toFixed(1)} KB</span><span>Uploading...</span></div>
+                <div class="progress-bar"><div class="progress" style="width:0%"></div></div>`;
+            fileList.prepend(card);
+            simulateProgress(card.querySelector(".progress"));
+        });
+
+        // In a real app, you would send files to server here
+        console.log("Files to upload:", files);
+    }
+
+    // Simulated progress animation
+    function simulateProgress(progressEl) {
+        let width = 0;
+        const interval = setInterval(() => {
+            if (width < 100) {
+                width += Math.random() * 10;
+                progressEl.style.width = width + "%";
+            } else {
+                clearInterval(interval);
+                progressEl.parentElement.previousElementSibling.querySelector("span:last-child").textContent = "Completed";
+            }
+        }, 200);
+    }
+
+    // Load sample files on page load
+    loadSampleFiles();
+
+    function loadSampleFiles() {
+        const sampleFiles = [
+            { name: "Project Proposal.pdf", size: 2450 },
+            { name: "Vacation Photos.zip", size: 15420 },
+            { name: "Financial Report.xlsx", size: 820 },
+            { name: "Design Mockups.sketch", size: 5320 }
+        ];
+
+        sampleFiles.forEach(file => {
+            const card = document.createElement("div");
+            card.className = "file-card";
+            card.innerHTML = `
+                <div class="file-header"><div class="file-icon"><i class="fas fa-file"></i></div></div>
+                <div class="file-name">${file.name}</div>
+                <div class="file-info"><span>${(file.size/1024).toFixed(1)} KB</span><span>Completed</span></div>
+                <div class="progress-bar"><div class="progress" style="width:100%"></div></div>
+                <div class="file-actions" style="margin-top:10px; display:flex; gap:10px;">
+                    <button class="browse-btn" style="padding:5px 15px;">Download</button>
+                    <button class="browse-btn" style="padding:5px 15px; background:#ff6584;">Delete</button>
+                </div>`;
+            fileList.appendChild(card);
+        });
+    }
+</script>
+
+</body>
+</html>

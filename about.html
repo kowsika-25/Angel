@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | NexusDrive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ---------- GLOBAL ---------- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+        :root {
+          --primary: #6c63ff;
+          --secondary: #4a44c6;
+          --accent: #ff6584;
+          --teal: #00ffd5;
+          --dark: #0d0d1b;
+          --light: #f5f5f7;
+          --glass: rgba(255, 255, 255, 0.08);
+          --glass-border: rgba(255, 255, 255, 0.15);
+        }
+        body {
+          background: linear-gradient(135deg, #100d25, #1a1442);
+          color: var(--light);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          animation: bgShift 25s ease infinite alternate;
+        }
+        @keyframes bgShift {
+          0% {background-position: 0% 0%;}
+          100% {background-position: 100% 100%;}
+        }
+
+        .container {
+          width: 100%;
+          max-width: 1200px;
+          margin-top: 100px;
+          position: relative;
+          z-index: 2;
+          transition: all 0.6s ease;
+          padding: 0 20px;
+        }
+
+        /* ---------- NAVBAR ---------- */
+        nav {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%;
+          background: linear-gradient(90deg, rgba(20,20,45,0.85), rgba(50,40,120,0.85), rgba(20,20,45,0.85));
+          backdrop-filter: blur(10px);
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+          z-index: 10;
+          padding: 15px 40px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: all 0.4s ease;
+        }
+        nav:hover {
+          box-shadow: 0 0 35px rgba(108, 99, 255, 0.45);
+        }
+        nav .logo {
+          display: flex;
+          align-items: center;
+          font-size: 28px;
+          font-weight: 700;
+          background: linear-gradient(45deg, var(--primary), var(--accent), var(--teal));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: hueSpin 6s linear infinite;
+        }
+        @keyframes hueSpin {
+          0% {filter: hue-rotate(0deg);}
+          100% {filter: hue-rotate(360deg);}
+        }
+        nav .nav-links {
+          display: flex;
+          gap: 30px;
+          align-items: center;
+        }
+        nav .nav-links a {
+          text-decoration: none;
+          color: #dcdcdc;
+          font-weight: 500;
+          position: relative;
+          transition: color 0.3s ease;
+        }
+
+        /* ---------- UNIQUE HOVER EFFECT ---------- */
+        nav .nav-links a::after {
+          content: '';
+          position: absolute;
+          left: 0; bottom: -6px;
+          width: 100%; height: 2px;
+          background: linear-gradient(90deg, var(--primary), var(--accent), var(--teal));
+          border-radius: 2px;
+          transform: scaleX(0);
+          transform-origin: right;
+          transition: transform 0.4s ease-in-out;
+        }
+        nav .nav-links a:hover::after {
+          transform: scaleX(1);
+          transform-origin: left;
+        }
+        nav .nav-links a:hover {
+          color: var(--teal);
+          text-shadow: 0 0 8px var(--teal);
+        }
+        nav .nav-links a.active {
+          color: var(--teal);
+          text-shadow: 0 0 8px var(--teal);
+        }
+        nav .nav-links a.active::after {
+          transform: scaleX(1);
+        }
+
+        /* ---------- AVATAR ---------- */
+        .user-avatar {
+          width: 45px; height: 45px; border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary), var(--accent));
+          display: flex; align-items: center; justify-content: center;
+          font-weight: bold;
+          font-size: 18px;
+          color: white;
+          box-shadow: 0 0 15px var(--accent);
+          transition: all 0.3s ease;
+        }
+        .user-avatar:hover {
+          transform: rotate(10deg) scale(1.1);
+          box-shadow: 0 0 25px var(--teal);
+        }
+
+        /* ---------- CARDS ---------- */
+        .feature-card, .team-card {
+          background: var(--glass);
+          border: 1px solid var(--glass-border);
+          border-radius: 20px;
+          backdrop-filter: blur(12px);
+          padding: 25px;
+          box-shadow: 0 0 25px rgba(108, 99, 255, 0.25);
+          transition: all 0.4s ease;
+        }
+        .feature-card:hover, .team-card:hover {
+          transform: translateY(-6px) scale(1.02);
+        }
+
+        /* ---------- ABOUT PAGE ---------- */
+        .about-hero {
+          text-align: center;
+          margin-bottom: 50px;
+        }
+        .about-hero h1 {
+          font-size: 3.5rem;
+          margin-bottom: 20px;
+          background: linear-gradient(45deg, var(--primary), var(--accent), var(--teal));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .about-hero p {
+          font-size: 1.2rem;
+          max-width: 800px;
+          margin: 0 auto;
+          color: #ccc;
+        }
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 30px;
+          margin-bottom: 50px;
+        }
+        .feature-card {
+          text-align: center;
+          padding: 30px;
+        }
+        .feature-icon {
+          font-size: 50px;
+          margin-bottom: 20px;
+          color: var(--teal);
+        }
+        .team-section {
+          margin-top: 50px;
+        }
+        .team-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 30px;
+          margin-top: 30px;
+        }
+        .team-card {
+          text-align: center;
+        }
+        .member-avatar {
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--primary), var(--accent));
+          margin: 0 auto 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 40px;
+          color: white;
+          box-shadow: 0 0 20px var(--primary);
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+          nav .nav-links { display: none; }
+          .about-hero h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo"><i class="fas fa-cloud-upload-alt"></i>&nbsp;NexusDrive</div>
+    <div class="nav-links">
+        <a href="./index.html">Home</a>
+        <a href="./upload.html">My Files</a>
+        <a href="./about.html" class="active">About</a>
+        <a href="./contact.html">Contact</a>
+    </div>
+    <div class="user-avatar">VA</div>
+</nav>
+
+<div class="container">
+    <!-- ABOUT HERO -->
+    <div class="about-hero">
+        <h1>About NexusDrive</h1>
+        <p>We're redefining cloud storage with cutting-edge technology and a user-centric approach. Our mission is to make file management seamless, secure, and beautiful.</p>
+    </div>
+    
+    <!-- FEATURES GRID -->
+    <div class="features-grid">
+        <div class="feature-card">
+            <i class="fas fa-rocket feature-icon"></i>
+            <h3>Our Vision</h3>
+            <p>To create a world where accessing and managing your digital files is as intuitive as thinking about them.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-lock feature-icon"></i>
+            <h3>Security First</h3>
+            <p>We employ the highest security standards to ensure your data remains private and protected at all times.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-globe feature-icon"></i>
+            <h3>Global Infrastructure</h3>
+            <p>With data centers across 5 continents, we deliver lightning-fast performance wherever you are.</p>
+        </div>
+    </div>
+    
+    <!-- TEAM SECTION -->
+    <div class="team-section">
+        <h2 class="card-title">Meet Our Team</h2>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="member-avatar">JD</div>
+                <h3>John Doe</h3>
+                <p>Chief Executive Officer</p>
+            </div>
+            <div class="team-card">
+                <div class="member-avatar">SJ</div>
+                <h3>Sarah Johnson</h3>
+                <p>Lead Developer</p>
+            </div>
+            <div class="team-card">
+                <div class="member-avatar">MW</div>
+                <h3>Michael Wang</h3>
+                <p>Security Architect</p>
+            </div>
+            <div class="team-card">
+                <div class="member-avatar">EP</div>
+                <h3>Emma Patel</h3>
+                <p>UX Designer</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
